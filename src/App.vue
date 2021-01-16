@@ -11,7 +11,7 @@
 
         <div class="content__catalog">
           <ProductsFilter v-bind.sync="productFilter"/>
-          <ProductsList v-if="productData" :productList="productData"/>
+          <ProductsList v-if="this.$store.state.productModules.productData.items" :productList="this.$store.state.productModules.productData.items"/>
         </div>
       <Pagination :page.sync="page" :all-products="getAllProducts" :per-products="limitProductPage"/>
     </main>
@@ -21,7 +21,7 @@
 import ProductsList from '@/components/ProductsList.vue'
 import Pagination from '@/components/Pagination.vue'
 import ProductsFilter from '@/components/ProductsFilter.vue'
-import { API_URL } from '@/helpers/API.js'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'App',
@@ -35,34 +35,27 @@ export default {
         maxPrice: 0
       },
       page: 1,
-      limitProductPage: 6,
-      productData: null
+      limitProductPage: 6
     }
   },
   components: {
     ProductsList, Pagination, ProductsFilter
   },
   methods: {
-    getLoadProducts () {
-      fetch(API_URL + '/api/products?' + new URLSearchParams({
-        categoryId: this.productFilter.categoryId,
-        minPrice: this.productFilter.minPrice,
-        maxPrice: this.productFilter.maxPrice,
-        limit: this.limitProductPage,
-        page: this.page
-      }), {
-        method: 'GET'
-      }).then(response => {
-        return response.json()
-      })
-        .then((data) => {
-          this.productData = data
-        })
-    }
+    ...mapActions(['getLoadProducts'])
+  },
+  async mounted () {
+    this.getLoadProducts({
+      categoryId: this.productFilter.categoryId,
+      minPrice: this.productFilter.minPrice,
+      maxPrice: this.productFilter.maxPrice,
+      limit: this.limitProductPage,
+      page: this.page
+    })
   },
   computed: {
     getAllProducts () {
-      return this.productData ? this.productData.pagination.total : 0
+      return this.$store.state.productModules.productData.items ? this.$store.state.productModules.productData.items.length : 0
     }
   },
   created () {
@@ -73,7 +66,7 @@ export default {
       this.getLoadProducts()
     },
     productFilter: {
-      handler () { this.getLoadProducts() },
+      handler () { this.stateFilterProducts() },
       deep: true
     }
   }
