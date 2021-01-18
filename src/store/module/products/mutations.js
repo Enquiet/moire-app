@@ -1,3 +1,6 @@
 export function updateProductDate (state, list) {
-  state.productData = list
+  state.productDate = list
+}
+export function updateAllProductDate (state, all) {
+  state.allproductDate = all
 }

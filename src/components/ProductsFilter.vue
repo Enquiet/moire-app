@@ -14,7 +14,15 @@
             </label>
                     </fieldset>
 
-                 <ProductFilterCotigories :product-id.sync="currentProductId"/>
+                  <fieldset class="form__block">
+                    <legend class="form__legend">Категория</legend>
+                    <label class="form__label form__label--select">
+                      <select class="form__select" type="text" name="category" v-model.number="currentProductId">
+                        <option value="0">Все категории</option>
+                        <option :value="category.id" v-for="category in getAllListCategory" :key="category.id">{{category.title}}</option>
+                      </select>
+                    </label>
+                  </fieldset>
 
                     <fieldset class="form__block">
                         <legend class="form__legend">Цвет</legend>
@@ -66,91 +74,8 @@
                         </ul>
                     </fieldset>
 
-                    <fieldset class="form__block">
-                        <legend class="form__legend">Материал</legend>
-                        <ul class="check-list">
-                            <li class="check-list__item">
-                                <label class="check-list__label">
-                  <input class="check-list__check sr-only" type="checkbox" name="volume" value="8" checked="">
-                  <span class="check-list__desc">
-                    лен
-                    <span>(3)</span>
-                  </span>
-                </label>
-                            </li>
-                            <li class="check-list__item">
-                                <label class="check-list__label">
-                  <input class="check-list__check sr-only" type="checkbox" name="volume" value="16">
-                  <span class="check-list__desc">
-                    хлопок
-                    <span>(46)</span>
-                  </span>
-                </label>
-                            </li>
-                            <li class="check-list__item">
-                                <label class="check-list__label">
-                  <input class="check-list__check sr-only" type="checkbox" name="volume" value="32">
-                  <span class="check-list__desc">
-                    шерсть
-                    <span>(20)</span>
-                  </span>
-                </label>
-                            </li>
-                            <li class="check-list__item">
-                                <label class="check-list__label">
-                  <input class="check-list__check sr-only" type="checkbox" name="volume" value="64">
-                  <span class="check-list__desc">
-                    шелк
-                    <span>(30)</span>
-                  </span>
-                </label>
-                            </li>
-
-                        </ul>
-                    </fieldset>
-
-                    <fieldset class="form__block">
-                        <legend class="form__legend">Коллекция</legend>
-                        <ul class="check-list">
-                            <li class="check-list__item">
-                                <label class="check-list__label">
-                <input class="check-list__check sr-only" type="checkbox" name="volume" value="8" checked="">
-                <span class="check-list__desc">
-                  лето
-                  <span>(3)</span>
-                </span>
-              </label>
-                            </li>
-                            <li class="check-list__item">
-                                <label class="check-list__label">
-                <input class="check-list__check sr-only" type="checkbox" name="volume" value="16">
-                <span class="check-list__desc">
-                  зима
-                  <span>(46)</span>
-                </span>
-              </label>
-                            </li>
-                            <li class="check-list__item">
-                                <label class="check-list__label">
-                <input class="check-list__check sr-only" type="checkbox" name="volume" value="32">
-                <span class="check-list__desc">
-                  весна
-                  <span>(20)</span>
-                </span>
-              </label>
-                            </li>
-                            <li class="check-list__item">
-                                <label class="check-list__label">
-                <input class="check-list__check sr-only" type="checkbox" name="volume" value="64">
-                <span class="check-list__desc">
-                  осень
-                  <span>(30)</span>
-                </span>
-              </label>
-                            </li>
-
-                        </ul>
-                    </fieldset>
+                  <ProductFilterCheck :current-filter.sync='currentMaterial' :filter-list="getMaterialList" :number-repited-product='getNumberMaterial' :title="materialTitle"/>
+                  <ProductFilterCheck :current-filter.sync='currentSeasons' :filter-list="getSeasonsList" :number-repited-product='getNumberSeasons' :title="seasonsTitle"/>
 
                     <button class="filter__submit button button--primery" type="submit" >
             Применить
@@ -162,13 +87,18 @@
             </aside>
 </template>
 <script>
-import ProductFilterCotigories from './ProductFilterCotigories.vue'
+import { mapActions, mapGetters } from 'vuex'
+import ProductFilterCheck from '@/components/ProductFilterCheck'
 export default {
   data () {
     return {
       currentMinPrice: 0,
       currentMaxPrice: 0,
-      currentProductId: 0
+      currentProductId: 0,
+      currentMaterial: [],
+      currentSeasons: [],
+      materialTitle: 'Материал',
+      seasonsTitle: 'Коллекции'
     }
   },
   props: {
@@ -183,6 +113,31 @@ export default {
     categoryId: {
       type: Number,
       default: 0
+    },
+    materialIds: {
+      type: Array,
+      default: () => []
+    },
+    seasonIds: {
+      type: Array,
+      default: () => []
+    }
+  },
+  components: {
+    ProductFilterCheck
+  },
+  computed: {
+    ...mapGetters('categoryModule', ['getAllCategory']),
+    ...mapGetters('productModule', ['getNumberMaterial']),
+    ...mapGetters('productModule', ['getNumberSeasons']),
+    getAllListCategory () {
+      return this.$store.state.categoryModule.categoryData ? this.$store.state.categoryModule.categoryData.items : []
+    },
+    getMaterialList (store) {
+      return this.$store.state.productMaterial.materialDate ? this.$store.state.productMaterial.materialDate.items : []
+    },
+    getSeasonsList () {
+      return this.$store.state.productSeason.seasonDate ? this.$store.state.productSeason.seasonDate.items : []
     }
   },
   watch: {
@@ -194,23 +149,39 @@ export default {
     },
     categoryId (value) {
       this.currentProductId = value
+    },
+    materialIds (value) {
+      this.currentMaterial = value
+    },
+    seasonIds (value) {
+      this.currentSeasons = value
     }
   },
   methods: {
+    ...mapActions('categoryModule', ['getListCategies']),
+    ...mapActions('productMaterial', ['getListMaterial']),
+    ...mapActions('productModule', ['getAllProducts']),
+    ...mapActions('productSeason', ['getListSeasons']),
     submitBtn () {
       this.$emit('update:categoryId', this.currentProductId)
       this.$emit('update:maxPrice', this.currentMaxPrice)
       this.$emit('update:minPrice', this.currentMinPrice)
+      this.$emit('update:materialIds', this.currentMaterial)
+      this.$emit('update:seasonIds', this.currentSeasons)
     },
     clearBtn () {
       this.$emit('update:categoryId', 0)
       this.$emit('update:maxPrice', 0)
       this.$emit('update:minPrice', 0)
+      this.$emit('update:materialIds', [])
+      this.$emit('update:seasonIds', [])
     }
   },
-  components: {
-    ProductFilterCotigories
+  async mounted () {
+    this.getListCategies()
+    this.getListMaterial()
+    this.getAllProducts()
+    this.getListSeasons()
   }
-
 }
 </script>

@@ -1,3 +1,4 @@
 export default {
-  productData: []
+  productDate: [],
+  allproductDate: []
 }

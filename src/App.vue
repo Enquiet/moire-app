@@ -11,7 +11,7 @@
 
         <div class="content__catalog">
           <ProductsFilter v-bind.sync="productFilter"/>
-          <ProductsList v-if="this.$store.state.productModules.productData.items" :productList="this.$store.state.productModules.productData.items"/>
+          <ProductsList v-if="this.$store.state.productModule.productDate.items" :productList="this.$store.state.productModule.productDate.items"/>
         </div>
       <Pagination :page.sync="page" :all-products="getAllProducts" :per-products="limitProductPage"/>
     </main>
@@ -29,10 +29,11 @@ export default {
     return {
       productFilter: {
         categoryId: 0,
-        materialIds: null,
-        seasonIds: null,
+        materialIds: [],
+        seasonIds: [],
         minPrice: 0,
         maxPrice: 0
+
       },
       page: 1,
       limitProductPage: 6
@@ -42,7 +43,7 @@ export default {
     ProductsList, Pagination, ProductsFilter
   },
   methods: {
-    ...mapActions(['getLoadProducts'])
+    ...mapActions('productModule', ['getLoadProducts'])
   },
   async mounted () {
     this.getLoadProducts({
@@ -50,23 +51,40 @@ export default {
       minPrice: this.productFilter.minPrice,
       maxPrice: this.productFilter.maxPrice,
       limit: this.limitProductPage,
-      page: this.page
+      page: this.page,
+      materials: this.productFilter.materialIds,
+      seasons: this.productFilter.seasonIds
     })
   },
   computed: {
     getAllProducts () {
-      return this.$store.state.productModules.productData.items ? this.$store.state.productModules.productData.items.length : 0
+      return this.$store.state.productModule.productDate.pagination ? this.$store.state.productModule.productDate.pagination.total : 0
     }
-  },
-  created () {
-    this.getLoadProducts()
   },
   watch: {
     page () {
-      this.getLoadProducts()
+      this.getLoadProducts({
+        categoryId: this.productFilter.categoryId,
+        minPrice: this.productFilter.minPrice,
+        maxPrice: this.productFilter.maxPrice,
+        limit: this.limitProductPage,
+        page: this.page,
+        materials: this.productFilter.materialIds,
+        seasons: this.productFilter.seasonIds
+      })
     },
     productFilter: {
-      handler () { this.stateFilterProducts() },
+      handler () {
+        this.getLoadProducts({
+          categoryId: this.productFilter.categoryId,
+          minPrice: this.productFilter.minPrice,
+          maxPrice: this.productFilter.maxPrice,
+          limit: this.limitProductPage,
+          page: this.page,
+          materials: this.productFilter.materialIds,
+          seasons: this.productFilter.seasonIds
+        })
+      },
       deep: true
     }
   }

@@ -5,20 +5,28 @@ export function getLoadProducts (context, {
   minPrice,
   maxPrice,
   limit,
-  page
+  page,
+  materials,
+  seasons
 }) {
-  fetch(API_URL + '/api/products?', new URLSearchParams({
-    categoryId: categoryId,
-    minPrice: minPrice,
-    maxPrice: maxPrice,
-    limit: limit,
-    page: page
-  }), {
+  console.log(materials, seasons)
+  return fetch(API_URL + '/api/products?categoryId=' + categoryId + '&materialIds[]=' + materials + '&seasonIds[]=' + seasons + '&page=' + page + '&limit=' + limit + '&minPrice=' + minPrice + '&maxPrice=' + maxPrice, {
     method: 'GET'
   }).then(response => {
     return response.json()
   })
     .then((response) => {
       context.commit('updateProductDate', response)
+    })
+}
+export function getAllProducts (context) {
+  return fetch(API_URL + '/api/products', {
+    method: 'GET'
+  })
+    .then(date => {
+      return date.json()
+    })
+    .then((date) => {
+      context.commit('updateAllProductDate', date)
     })
 }
