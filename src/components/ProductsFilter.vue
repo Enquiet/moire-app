@@ -1,90 +1,59 @@
 <template>
-     <aside class="filter">
+<aside class="filter">
+  <form class="filter__form form" action="#" method="get" @submit.prevent="submitBtn">
+    <fieldset class="form__block">
+      <legend class="form__legend">Цена</legend>
+      <label class="form__label form__label--price">
+        <input class="form__input" type="text" name="min-price" v-model.number="currentMinPrice">
+        <span class="form__value">От</span>
+      </label>
+      <label class="form__label form__label--price">
+        <input class="form__input" type="text" name="max-price" v-model.number="currentMaxPrice">
+        <span class="form__value">До</span>
+      </label>
+    </fieldset>
 
-                <form class="filter__form form" action="#" method="get" @submit.prevent="submitBtn">
-                    <fieldset class="form__block">
-                        <legend class="form__legend">Цена</legend>
-                        <label class="form__label form__label--price">
-              <input class="form__input" type="text" name="min-price" v-model.number="currentMinPrice">
-              <span class="form__value">От</span>
-            </label>
-                        <label class="form__label form__label--price">
-              <input class="form__input" type="text" name="max-price" v-model.number="currentMaxPrice">
-              <span class="form__value">До</span>
-            </label>
-                    </fieldset>
+    <fieldset class="form__block">
+      <legend class="form__legend">Категория</legend>
+      <label class="form__label form__label--select">
+        <select class="form__select" type="text" name="category" v-model.number="currentProductId">
+          <option value="0">Все категории</option>
+          <option
+          :value="category.id" v-for="category in getAllListCategory"
+          :key="category.id">{{category.title}}
+          </option>
+        </select>
+      </label>
+    </fieldset>
 
-                  <fieldset class="form__block">
-                    <legend class="form__legend">Категория</legend>
-                    <label class="form__label form__label--select">
-                      <select class="form__select" type="text" name="category" v-model.number="currentProductId">
-                        <option value="0">Все категории</option>
-                        <option :value="category.id" v-for="category in getAllListCategory" :key="category.id">{{category.title}}</option>
-                      </select>
-                    </label>
-                  </fieldset>
-
-                    <fieldset class="form__block">
-                        <legend class="form__legend">Цвет</legend>
-                        <ul class="colors">
-                            <li class="colors__item">
-                                <label class="colors__label">
-                  <input class="colors__radio sr-only" type="radio" name="color" value="#73B6EA" checked="">
-                  <span class="colors__value" style="background-color: #73B6EA;">
-                  </span>
-                </label>
-                            </li>
-                            <li class="colors__item">
-                                <label class="colors__label">
-                  <input class="colors__radio sr-only" type="radio" name="color" value="#FFBE15">
-                  <span class="colors__value" style="background-color: #FFBE15;">
-                  </span>
-                </label>
-                            </li>
-                            <li class="colors__item">
-                                <label class="colors__label">
-                  <input class="colors__radio sr-only" type="radio" name="color" value="#939393">
-                  <span class="colors__value" style="background-color: #939393;">
-                </span></label>
-                            </li>
-                            <li class="colors__item">
-                                <label class="colors__label">
-                  <input class="colors__radio sr-only" type="radio" name="color" value="#8BE000">
-                  <span class="colors__value" style="background-color: #8BE000;">
-                </span></label>
-                            </li>
-                            <li class="colors__item">
-                                <label class="colors__label">
-                  <input class="colors__radio sr-only" type="radio" name="color" value="#FF6B00">
-                  <span class="colors__value" style="background-color: #FF6B00;">
-                </span></label>
-                            </li>
-                            <li class="colors__item">
-                                <label class="colors__label">
-                  <input class="colors__radio sr-only" type="radio" name="color" value="#FFF">
-                  <span class="colors__value" style="background-color: #FFF;">
-                </span></label>
-                            </li>
-                            <li class="colors__item">
-                                <label class="colors__label">
-                  <input class="colors__radio sr-only" type="radio" name="color" value="#000">
-                  <span class="colors__value" style="background-color: #000;">
-                </span></label>
-                            </li>
-                        </ul>
-                    </fieldset>
-
-                  <ProductFilterCheck :current-filter.sync='currentMaterial' :filter-list="getMaterialList" :number-repited-product='getNumberMaterial' :title="materialTitle"/>
-                  <ProductFilterCheck :current-filter.sync='currentSeasons' :filter-list="getSeasonsList" :number-repited-product='getNumberSeasons' :title="seasonsTitle"/>
-
-                    <button class="filter__submit button button--primery" type="submit" >
-            Применить
-          </button>
-                    <button class="filter__reset button button--second" type="button" @click.prevent="clearBtn">
-            Сбросить
-          </button>
-                </form>
-            </aside>
+    <fieldset class="form__block">
+      <legend class="form__legend">Цвет</legend>
+      <ul class="colors">
+        <li class="colors__item" v-for="color in getAllColorProducts" :key="color.id">
+          <label class="colors__label">
+          <input class="colors__radio sr-only" type="radio" name="color" :value="color.id" v-model.number="currentColor" checked="">
+          <span class="colors__value" :style='{background: color.code}'>
+          </span>
+        </label>
+        </li>
+      </ul>
+    </fieldset>
+    <ProductFilterCheck
+    :current-filter.sync='currentMaterial'
+    v-if="this.$store.state.filterModule.materialDate"
+    :filter-list="this.$store.state.filterModule.materialDate.items"
+    :title="materialTitle"
+    />
+    <ProductFilterCheck
+    :current-filter.sync='currentSeasons'
+    v-if="this.$store.state.filterModule.seasonDate"
+    :filter-list="this.$store.state.filterModule.seasonDate.items"
+    :title="seasonsTitle"
+    />
+    <button class="filter__submit button button--primery" type="submit" >Применить</button>
+    <button class="filter__reset button button--second" type="button" @click.prevent="clearBtn">Сбросить</button>
+  </form>
+</aside>
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
@@ -97,6 +66,7 @@ export default {
       currentProductId: 0,
       currentMaterial: [],
       currentSeasons: [],
+      currentColor: 0,
       materialTitle: 'Материал',
       seasonsTitle: 'Коллекции'
     }
@@ -121,23 +91,22 @@ export default {
     seasonIds: {
       type: Array,
       default: () => []
+    },
+    colorIds: {
+      type: Number,
+      default: 0
     }
   },
   components: {
     ProductFilterCheck
   },
   computed: {
-    ...mapGetters('categoryModule', ['getAllCategory']),
-    ...mapGetters('productModule', ['getNumberMaterial']),
-    ...mapGetters('productModule', ['getNumberSeasons']),
+    ...mapGetters('filterModule', ['getAllCategory']),
     getAllListCategory () {
-      return this.$store.state.categoryModule.categoryData ? this.$store.state.categoryModule.categoryData.items : []
+      return this.$store.state.filterModule.categoryData ? this.$store.state.filterModule.categoryData.items : []
     },
-    getMaterialList (store) {
-      return this.$store.state.productMaterial.materialDate ? this.$store.state.productMaterial.materialDate.items : []
-    },
-    getSeasonsList () {
-      return this.$store.state.productSeason.seasonDate ? this.$store.state.productSeason.seasonDate.items : []
+    getAllColorProducts () {
+      return this.$store.state.filterModule.colorDate ? this.$store.state.filterModule.colorDate.items : []
     }
   },
   watch: {
@@ -155,19 +124,20 @@ export default {
     },
     seasonIds (value) {
       this.currentSeasons = value
+    },
+    colorIds (value) {
+      this.currentColor = value
     }
   },
   methods: {
-    ...mapActions('categoryModule', ['getListCategies']),
-    ...mapActions('productMaterial', ['getListMaterial']),
-    ...mapActions('productModule', ['getAllProducts']),
-    ...mapActions('productSeason', ['getListSeasons']),
+    ...mapActions('filterModule', ['getListCategies', 'getListMaterial', 'getAllProducts', 'getListSeasons', 'getListColor']),
     submitBtn () {
       this.$emit('update:categoryId', this.currentProductId)
       this.$emit('update:maxPrice', this.currentMaxPrice)
       this.$emit('update:minPrice', this.currentMinPrice)
       this.$emit('update:materialIds', this.currentMaterial)
       this.$emit('update:seasonIds', this.currentSeasons)
+      this.$emit('update:colorIds', this.currentColor)
     },
     clearBtn () {
       this.$emit('update:categoryId', 0)
@@ -175,6 +145,7 @@ export default {
       this.$emit('update:minPrice', 0)
       this.$emit('update:materialIds', [])
       this.$emit('update:seasonIds', [])
+      this.$emit('update:colorIds', 0)
     }
   },
   async mounted () {
@@ -182,6 +153,7 @@ export default {
     this.getListMaterial()
     this.getAllProducts()
     this.getListSeasons()
+    this.getListColor()
   }
 }
 </script>

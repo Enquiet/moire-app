@@ -1,9 +1,12 @@
 <template>
   <section class="catalog">
     <ul class="catalog__list">
-     <ProductItem :product="products" v-for="products in productList" :key="products.id"/>
+     <ProductItem
+     :product="products"
+     v-for="products in productList"
+     :key="products.id"
+     />
     </ul>
-
   </section>
 </template>
 

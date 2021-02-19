@@ -1,20 +1,25 @@
 <template>
-   <main class="content container">
-        <div class="content__top content__top--catalog">
-            <h1 class="content__title">
-                Каталог
-            </h1>
-            <span class="content__info">
-        152 товара
-      </span>
-        </div>
+  <main class="content container">
+    <div class="content__top content__top--catalog">
+      <h1 class="content__title">Каталог</h1>
+      <span class="content__info">152 товара</span>
+    </div>
 
-        <div class="content__catalog">
-          <ProductsFilter v-bind.sync="productFilter"/>
-          <ProductsList v-if="this.$store.state.productModule.productDate.items" :productList="this.$store.state.productModule.productDate.items"/>
-        </div>
-      <Pagination :page.sync="page" :all-products="getAllProducts" :per-products="limitProductPage"/>
-    </main>
+    <div class="content__catalog">
+      <ProductsFilter
+      v-bind.sync="productFilter"
+      />
+      <ProductsList
+      v-if="this.$store.state.productModule.productDate.items"
+      :productList="this.$store.state.productModule.productDate.items"
+      />
+    </div>
+      <Pagination
+      :page.sync="page"
+      :all-products="getAllProducts"
+      :per-products="limitProductPage"
+      />
+  </main>
 </template>
 
 <script>
@@ -31,6 +36,7 @@ export default {
         categoryId: 0,
         materialIds: [],
         seasonIds: [],
+        colorIds: 0,
         minPrice: 0,
         maxPrice: 0
 
@@ -53,7 +59,8 @@ export default {
       limit: this.limitProductPage,
       page: this.page,
       materials: this.productFilter.materialIds,
-      seasons: this.productFilter.seasonIds
+      seasons: this.productFilter.seasonIds,
+      color: this.productFilter.colorIds
     })
   },
   computed: {

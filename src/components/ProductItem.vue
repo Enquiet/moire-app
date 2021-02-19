@@ -1,8 +1,11 @@
 <template>
    <li class="catalog__item">
-        <a class="catalog__pic" href="#">
-          <img src="img/radio.jpg" srcset="img/radio@2x.jpg 2x" alt="Название товара">
-        </a>
+        <ProductImg
+        v-for="color in product.colors"
+        :key="color.id"
+        :color-id="colorImg"
+        :colors="color"
+        />
         <h3 class="catalog__title">
           <a href="#">
             {{product.title}}
@@ -11,14 +14,22 @@
         <span class="catalog__price">
           {{product.price}} ₽
         </span>
-        <ul class="colors colors--black">
-          <ProductColor  v-for="color in product.colors" :key="color.id"/>
-        </ul>
+        <ProductColor
+        :color-img.sync="colorImg"
+        :colors="product.colors"
+        />
       </li>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 import ProductColor from './ProductColor.vue'
+import ProductImg from './ProductImg.vue'
 export default {
+  data () {
+    return {
+      colorImg: 0
+    }
+  },
   props: {
     product: {
       type: Object,
@@ -26,7 +37,10 @@ export default {
     }
   },
   components: {
-    ProductColor
+    ProductColor, ProductImg
+  },
+  computed: {
+    ...mapGetters('productModule', ['getImgProducts'])
   }
 }
 </script>
