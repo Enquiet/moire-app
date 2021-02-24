@@ -16,7 +16,7 @@
     </div>
       <Pagination
       :page.sync="page"
-      :total-product="pagination"
+      :total-products="pagination"
       :per-products="limitProductPage"
       />
   </main>

@@ -9,8 +9,8 @@ export default {
     updateProductDate (state, list) {
       state.productsData = list.items
     },
-    updatePagination (state, all) {
-      state.pagination = all.pagination.total
+    updatePagination (state, { pagination }) {
+      state.pagination = pagination.total
     }
   },
   actions: {
