@@ -1,11 +1,8 @@
 <template>
    <li class="catalog__item">
-        <ProductImg
-        v-for="color in product.colors"
-        :key="color.id"
-        :color-id="colorImg"
-        :colors="color"
-        />
+      <a class="catalog__pic" href="#">
+        <img :src="computedImage"  alt="Название товара">
+      </a>
         <h3 class="catalog__title">
           <a href="#">
             {{product.title}}
@@ -14,33 +11,37 @@
         <span class="catalog__price">
           {{product.price}} ₽
         </span>
-        <ProductColor
-        :color-img.sync="colorImg"
-        :colors="product.colors"
+        <ProductColors
+        :current-color.sync="currentColorId"
+        :colors="colors"
         />
-      </li>
+    </li>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-import ProductColor from './ProductColor.vue'
-import ProductImg from './ProductImg.vue'
+import ProductColors from './ProductColors.vue'
 export default {
   data () {
     return {
-      colorImg: 0
+      currentColorId: this.product.colors[0].color.id
     }
   },
   props: {
     product: {
       type: Object,
-      default: () => []
+      default: () => {}
     }
   },
   components: {
-    ProductColor, ProductImg
+    ProductColors
   },
   computed: {
-    ...mapGetters('productModule', ['getImgProducts'])
+    computedImage () {
+      const color = this.product.colors.find(c => c.color.id === this.currentColorId)
+      return color.gallery[0].file.url
+    },
+    colors () {
+      return this.product.colors.map(c => c.color)
+    }
   }
 }
 </script>

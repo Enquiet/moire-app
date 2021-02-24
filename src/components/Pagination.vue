@@ -28,11 +28,11 @@ export default {
       type: Number,
       default: 0
     },
-    allProducts: {
+    totalProducts: {
       type: Number,
       default: 0
     },
-    PerProducts: {
+    perProducts: {
       type: Number,
       default: 0
     }
@@ -49,7 +49,7 @@ export default {
   },
   computed: {
     Pages () {
-      return Math.ceil(this.allProducts / this.PerProducts)
+      return Math.ceil(this.totalProducts / this.perProducts)
     }
   }
 }

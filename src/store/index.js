@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import productModule from './module/products'
-import filterModule from './module/productsFilter'
+import products from './module/products'
+import filters from './module/filters'
 
 Vue.use(Vuex)
 export default new Vuex.Store({
   modules: {
-    productModule,
-    filterModule
+    products,
+    filters
   }
 })

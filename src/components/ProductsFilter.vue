@@ -19,8 +19,9 @@
         <select class="form__select" type="text" name="category" v-model.number="currentProductId">
           <option value="0">Все категории</option>
           <option
-          :value="category.id" v-for="category in getAllListCategory"
-          :key="category.id">{{category.title}}
+          :value="category.id" v-for="category in categoiesData"
+          :key="category.id">
+          {{category.title}}
           </option>
         </select>
       </label>
@@ -29,7 +30,7 @@
     <fieldset class="form__block">
       <legend class="form__legend">Цвет</legend>
       <ul class="colors">
-        <li class="colors__item" v-for="color in getAllColorProducts" :key="color.id">
+        <li class="colors__item" v-for="color in colorsData" :key="color.id">
           <label class="colors__label">
           <input class="colors__radio sr-only" type="radio" name="color" :value="color.id" v-model.number="currentColor" checked="">
           <span class="colors__value" :style='{background: color.code}'>
@@ -40,14 +41,12 @@
     </fieldset>
     <ProductFilterCheck
     :current-filter.sync='currentMaterial'
-    v-if="this.$store.state.filterModule.materialDate"
-    :filter-list="this.$store.state.filterModule.materialDate.items"
+    :filter-list="materialsData"
     :title="materialTitle"
     />
     <ProductFilterCheck
     :current-filter.sync='currentSeasons'
-    v-if="this.$store.state.filterModule.seasonDate"
-    :filter-list="this.$store.state.filterModule.seasonDate.items"
+    :filter-list="seasonsData"
     :title="seasonsTitle"
     />
     <button class="filter__submit button button--primery" type="submit" >Применить</button>
@@ -56,7 +55,7 @@
 </aside>
 </template>
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import ProductFilterCheck from '@/components/ProductFilterCheck'
 export default {
   data () {
@@ -101,13 +100,7 @@ export default {
     ProductFilterCheck
   },
   computed: {
-    ...mapGetters('filterModule', ['getAllCategory']),
-    getAllListCategory () {
-      return this.$store.state.filterModule.categoryData ? this.$store.state.filterModule.categoryData.items : []
-    },
-    getAllColorProducts () {
-      return this.$store.state.filterModule.colorDate ? this.$store.state.filterModule.colorDate.items : []
-    }
+    ...mapState('filters', ['categoiesData', 'materialsData', 'seasonsData', 'colorsData'])
   },
   watch: {
     minPrice (value) {
@@ -130,7 +123,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('filterModule', ['getListCategies', 'getListMaterial', 'getAllProducts', 'getListSeasons', 'getListColor']),
+    ...mapActions('filters', ['getListCategies', 'getListMaterial', 'getListSeasons', 'getListColor']),
     submitBtn () {
       this.$emit('update:categoryId', this.currentProductId)
       this.$emit('update:maxPrice', this.currentMaxPrice)
@@ -151,7 +144,6 @@ export default {
   async mounted () {
     this.getListCategies()
     this.getListMaterial()
-    this.getAllProducts()
     this.getListSeasons()
     this.getListColor()
   }
