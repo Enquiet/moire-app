@@ -29,15 +29,10 @@
 
     <fieldset class="form__block">
       <legend class="form__legend">Цвет</legend>
-      <ul class="colors">
-        <li class="colors__item" v-for="color in colorsData" :key="color.id">
-          <label class="colors__label">
-          <input class="colors__radio sr-only" type="radio" name="color" :value="color.id" v-model.number="currentColor" checked="">
-          <span class="colors__value" :style='{background: color.code}'>
-          </span>
-        </label>
-        </li>
-      </ul>
+      <ProductColors
+      :current-color.sync="currentColor"
+      :colors="colorsData"
+      />
     </fieldset>
     <ProductFilterCheck
     :current-filter.sync='currentMaterial'
@@ -57,6 +52,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import ProductFilterCheck from '@/components/ProductFilterCheck'
+import ProductColors from '@/components/ProductColors.vue'
 export default {
   data () {
     return {
@@ -97,7 +93,7 @@ export default {
     }
   },
   components: {
-    ProductFilterCheck
+    ProductFilterCheck, ProductColors
   },
   computed: {
     ...mapState('filters', ['categoiesData', 'materialsData', 'seasonsData', 'colorsData'])
@@ -123,7 +119,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('filters', ['getListCategies', 'getListMaterial', 'getListSeasons', 'getListColor']),
+    ...mapActions('filters', ['getCategies', 'getMaterial', 'getSeasons', 'getColor']),
     submitBtn () {
       this.$emit('update:categoryId', this.currentProductId)
       this.$emit('update:maxPrice', this.currentMaxPrice)
@@ -142,10 +138,10 @@ export default {
     }
   },
   async mounted () {
-    this.getListCategies()
-    this.getListMaterial()
-    this.getListSeasons()
-    this.getListColor()
+    this.getCategies()
+    this.getMaterial()
+    this.getSeasons()
+    this.getColor()
   }
 }
 </script>

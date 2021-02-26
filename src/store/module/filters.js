@@ -1,4 +1,4 @@
-import api from '@/helpers/api.js'
+import api from '@/api/api.js'
 export default {
   namespaced: true,
   state: {
@@ -22,19 +22,19 @@ export default {
     }
   },
   actions: {
-    async getListCategies ({ commit }) {
+    async getCategies ({ commit }) {
       const categoies = await api.fetchApi('api/productCategories', 'GET')
       commit('updateProductCategoies', categoies)
     },
-    async getListMaterial ({ commit }) {
+    async getMaterial ({ commit }) {
       const materials = await api.fetchApi('api/materials', 'GET')
       commit('updateMaterail', materials)
     },
-    async getListSeasons ({ commit }) {
+    async getSeasons ({ commit }) {
       const seasons = await api.fetchApi('api/seasons', 'GET')
       commit('updateSeasonProducts', seasons)
     },
-    async getListColor ({ commit }) {
+    async getColor ({ commit }) {
       const colors = await api.fetchApi('api/colors', 'GET')
       commit('updateColor', colors)
     }
