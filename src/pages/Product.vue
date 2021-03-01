@@ -136,7 +136,7 @@ import ProductColors from '@/components/ProductColors.vue'
 export default {
   data () {
     return {
-      currentColorId: 20
+      currentColorId: null
     }
   },
   components: {
@@ -150,7 +150,6 @@ export default {
       }
     },
     colors () {
-      console.log(this.productData)
       return this.productData.colors.map(c => c.color)
     },
     computedImage () {
@@ -161,8 +160,9 @@ export default {
   methods: {
     ...mapActions('products', ['getLoadProduct'])
   },
-  mounted () {
-    this.getLoadProduct(this.router)
+  async created () {
+    await this.getLoadProduct(this.router)
+    this.currentColorId = this.productData.colors[0].color.id
   },
   watch: {
     '$route.params.id': {
@@ -172,5 +172,6 @@ export default {
       immediate: true
     }
   }
+
 }
 </script>
