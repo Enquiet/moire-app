@@ -1,16 +1,17 @@
 <template>
-    <main v-if="this.productData" class="content container">
+    <LoadingPage v-if="loadPage"/>
+    <main v-else class="content container">
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="index.html">
+          <router-link class="breadcrumbs__link"  :to="{name: 'main'}">
             Каталог
-          </a>
+          </router-link>
         </li>
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="#">
-            Носки
-          </a>
+          <router-link class="breadcrumbs__link"  :to="{name: 'main'}">
+            {{this.productData.category.title}}
+          </router-link>
         </li>
         <li class="breadcrumbs__item">
           <a class="breadcrumbs__link">
@@ -40,7 +41,7 @@
       </div>
 
       <div class="item__info">
-        <span class="item__code">Артикул: 150030</span>
+        <span class="item__code">Артикул: {{this.productData.id}}</span>
         <h2 class="item__title">
            {{this.productData.title}}
         </h2>
@@ -133,41 +134,49 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import ProductColors from '@/components/ProductColors.vue'
+import LoadingPage from '@/components/LoadingPage.vue'
+
 export default {
   data () {
     return {
-      currentColorId: null
+      currentColorId: null,
+      loadPage: false
     }
   },
   components: {
-    ProductColors
+    ProductColors, LoadingPage
   },
   computed: {
     ...mapState('products', ['productData']),
-    router () {
-      return {
-        id: this.$route.params.id
-      }
+    id () {
+      return Number(this.$route.params.id)
     },
     colors () {
       return this.productData.colors.map(c => c.color)
     },
     computedImage () {
       const color = this.productData.colors.find(c => c.color.id === this.currentColorId)
-      return color.gallery[0].file.url
+      return color ? color.gallery[0].file.url : null
     }
   },
   methods: {
-    ...mapActions('products', ['getLoadProduct'])
+    ...mapActions('products', ['getLoadProduct']),
+    loadsPage () {
+      this.loadPage = true
+      this.loadPagesTimer = setTimeout(() => {
+        this.getLoadProduct(this.id)
+        this.loadPage = false
+      }, 2000)
+    }
   },
   async created () {
-    await this.getLoadProduct(this.router)
+    await this.getLoadProduct(this.id)
     this.currentColorId = this.productData.colors[0].color.id
   },
   watch: {
     '$route.params.id': {
       handler () {
-        this.getLoadProduct(this.router)
+        this.loadsPage()
       },
       immediate: true
     }

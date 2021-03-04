@@ -4,9 +4,9 @@
         <img :src="computedImage"  alt="Название товара">
       </router-link>
         <h3 class="catalog__title">
-          <a href="#">
+          <router-link :to="{name:'main'}">
             {{product.title}}
-          </a>
+          </router-link>
         </h3>
         <span class="catalog__price">
           {{product.price}} ₽

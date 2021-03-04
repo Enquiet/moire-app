@@ -2,14 +2,17 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Main from '@/pages/Main'
 import Product from '@/pages/Product'
+import notFoundPage from '@/pages/404'
 Vue.use(VueRouter)
 
 const routes = [
   { name: 'main', component: Main, path: '/' },
-  { name: 'product', component: Product, path: '/product/:id' }
+  { name: 'product', component: Product, path: '/product/:id' },
+  { name: '404', component: notFoundPage, path: '*' }
 ]
 
 const router = new VueRouter({
+  mode: 'hash',
   routes
 })
 export default router

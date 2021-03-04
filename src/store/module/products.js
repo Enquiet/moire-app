@@ -32,9 +32,7 @@ export default {
       commit('updateProductDate', list)
       commit('updatePagination', list)
     },
-    async getLoadProduct ({ commit }, {
-      id
-    }) {
+    async getLoadProduct ({ commit }, id) {
       const product = await api.fetchApi(`api/products/${id}`, 'GET')
       commit('updateProductData', product)
     }
