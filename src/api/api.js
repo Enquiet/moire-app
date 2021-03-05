@@ -1,3 +1,4 @@
+/* eslint no-useless-catch:0 */
 import { API_URL } from './url.js'
 
 export default {
@@ -9,7 +10,7 @@ export default {
       const json = await response.json()
       return json
     } catch (e) {
-      console.log(e)
+      throw e
     }
   }
 }
