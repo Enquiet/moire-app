@@ -8,7 +8,8 @@ Vue.use(VueRouter)
 const routes = [
   { name: 'main', component: Main, path: '/' },
   { name: 'product', component: Product, path: '/product/:id' },
-  { name: '404', component: notFoundPage, path: '*' }
+  { name: '404', component: notFoundPage, path: '/404' },
+  { path: '*', redirect: '*' }
 ]
 
 const router = new VueRouter({

@@ -23,19 +23,19 @@ export default {
   },
   actions: {
     async getCategies ({ commit }) {
-      const categoies = await api.fetchApi('api/productCategories', 'GET')
+      const categoies = await api.fetchApi('api/productCategories')
       commit('updateProductCategoies', categoies)
     },
     async getMaterial ({ commit }) {
-      const materials = await api.fetchApi('api/materials', 'GET')
+      const materials = await api.fetchApi('api/materials')
       commit('updateMaterail', materials)
     },
     async getSeasons ({ commit }) {
-      const seasons = await api.fetchApi('api/seasons', 'GET')
+      const seasons = await api.fetchApi('api/seasons')
       commit('updateSeasonProducts', seasons)
     },
     async getColor ({ commit }) {
-      const colors = await api.fetchApi('api/colors', 'GET')
+      const colors = await api.fetchApi('api/colors')
       commit('updateColor', colors)
     }
   }

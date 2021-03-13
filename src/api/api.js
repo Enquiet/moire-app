@@ -1,16 +1,15 @@
-/* eslint no-useless-catch:0 */
 import { API_URL } from './url.js'
 
 export default {
-  async fetchApi (url, method, data) {
-    try {
-      const response = await fetch(`${API_URL}/${url}`, {
-        method
-      })
-      const json = await response.json()
-      return json
-    } catch (e) {
-      throw e
+  async fetchApi (url, method = 'GET', data) {
+    const response = await fetch(`${API_URL}/${url}`, {
+      method
+    })
+    if (!response.ok) {
+      const error = new Error(response.error)
+      throw error
     }
+    const json = await response.json()
+    return json
   }
 }

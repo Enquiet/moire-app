@@ -4,7 +4,7 @@
         <img :src="computedImage"  alt="Название товара">
       </router-link>
         <h3 class="catalog__title">
-          <router-link :to="{name:'main'}">
+          <router-link :to="{name:'product', params:{id:product.id}}">
             {{product.title}}
           </router-link>
         </h3>

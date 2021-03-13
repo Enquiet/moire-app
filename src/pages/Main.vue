@@ -2,7 +2,7 @@
    <main class="content container">
     <div class="content__top content__top--catalog">
       <h1 class="content__title">Каталог</h1>
-      <span class="content__info">152 товара</span>
+      <span class="content__info">{{pagination}} товара</span>
     </div>
 
     <div class="content__catalog">
@@ -50,9 +50,6 @@ export default {
   methods: {
     ...mapActions('products', ['getLoadProducts'])
   },
-  mounted () {
-    this.getLoadProducts(this.filters)
-  },
   computed: {
     ...mapState('products', ['pagination', 'productsData']),
     filters () {
@@ -76,6 +73,7 @@ export default {
       handler () {
         this.getLoadProducts(this.filters)
       },
+      immediate: true,
       deep: true
     }
   }

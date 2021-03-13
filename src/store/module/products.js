@@ -1,4 +1,5 @@
 import api from '@/api/api.js'
+import img from '@/helpers/image.js'
 export default {
   namespaced: true,
   state: {
@@ -17,6 +18,18 @@ export default {
       state.productData = product
     }
   },
+  getters: {
+    updateNewImages (state) {
+      return state.productData.colors.map(item => {
+        const url = img.map(e => e.image)
+        return {
+          ...item.gallery[0].file,
+          id: item.color.id,
+          list: url
+        }
+      })
+    }
+  },
   actions: {
     async getLoadProducts ({ commit }, {
       categoryId,
@@ -28,13 +41,18 @@ export default {
       seasons,
       color
     }) {
-      const list = await api.fetchApi(`api/products?categoryId=${categoryId}&materialIds[]=${materials}&seasonIds[]=${seasons}&colorIds[]=${color}'&page=${page}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}`, 'GET')
+      const list = await api.fetchApi(`api/products?categoryId=${categoryId}&materialIds[]=${materials}&seasonIds[]=${seasons}&colorIds[]=${color}'&page=${page}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}`)
       commit('updateProductDate', list)
       commit('updatePagination', list)
     },
     async getLoadProduct ({ commit }, id) {
-      const product = await api.fetchApi(`api/products/${id}`, 'GET')
-      commit('updateProductData', product)
+      try {
+        const product = await api.fetchApi(`api/products/${id}`)
+        commit('updateProductData', product)
+      } catch (e) {
+        console.log('ошибка в экшене getLoadProduct')
+        throw e
+      }
     }
   }
 }

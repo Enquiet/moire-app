@@ -15,7 +15,7 @@
         </li>
         <li class="breadcrumbs__item">
           <a class="breadcrumbs__link">
-            Носки с принтом мороженое
+            {{this.productData.title}}
           </a>
         </li>
       </ul>
@@ -24,17 +24,26 @@
     <section class="item">
       <div class="item__pics pics">
         <div class="pics__wrapper">
-          <img width="570" height="570" :src="computedImage"  alt="Название товара">
+          <img width="570" height="570" :src="productImageSelected"  alt="Название товара">
         </div>
         <ul class="pics__list">
-          <li class="pics__item">
-            <a href="" class="pics__link pics__link--current">
-              <img width="98" height="98" src="img/product-square-2.jpg" srcset="img/product-square-2@2x.jpg 2x" alt="Название товара">
+           <li class="pics__item">
+            <a type="button" class="pics__link"
+            @click.prevent=" setProductImage(firstProductImage)"
+            :class="{'pics__link--current':firstProductImage === productImageSelected}"
+            >
+              <img width="98" height="98" :src="firstProductImage"  alt="Название товара">
             </a>
           </li>
-          <li class="pics__item">
-            <a href="" class="pics__link">
-              <img width="98" height="98" src="img/product-square-3.jpg" srcset="img/product-square-3@2x.jpg 2x" alt="Название товара">
+          <li class="pics__item"
+          v-for="(img, index) in listImage"
+          :key="index"
+          >
+            <a type="button" class="pics__link"
+            @click.prevent=" setProductImage(img)"
+            :class="{'pics__link--current':img === productImageSelected}"
+            >
+              <img width="98" height="98" :src="img"  alt="Название товара">
             </a>
           </li>
         </ul>
@@ -48,21 +57,7 @@
         <div class="item__form">
           <form class="form" action="#" method="POST">
             <div class="item__row item__row--center">
-              <div class="form__counter">
-                <button type="button" aria-label="Убрать один товар">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-minus"></use>
-                  </svg>
-                </button>
-
-                <input type="text" value="1" name="count">
-
-                <button type="button" aria-label="Добавить один товар">
-                  <svg width="12" height="12" fill="currentColor">
-                    <use xlink:href="#icon-plus"></use>
-                  </svg>
-                </button>
-              </div>
+              <Counter :amount-product.sync="amountProduct"/>
 
               <b class="item__price">
                {{productData.price}} ₽
@@ -97,25 +92,26 @@
 
       <div class="item__desc">
         <ul class="tabs">
-          <li class="tabs__item">
-            <a class="tabs__link tabs__link--current">
-              Информация о товаре
-            </a>
+          <li class="tabs__item tabs__link"
+          :class="{'tabs__link--current': infoProduct}"
+          @click.prevent="infoProduct = true"
+          >
+             Информация о товаре
           </li>
-          <li class="tabs__item">
-            <a class="tabs__link" href="#">
-              Доставка и возврат
-            </a>
+          <li class="tabs__item tabs__link"
+          :class="{'tabs__link--current': !infoProduct}"
+          @click.prevent="infoProduct = false"
+          >
+            Доставка и возврат
           </li>
         </ul>
-
-        <div class="item__content">
+        <div class="item__content" v-if="infoProduct">
           <h3>Состав:</h3>
-
-          <p>
-            60% хлопок<br>
-            30% полиэстер<br>
-          </p>
+          <ul class="item__list materials" v-for="material in materials" :key="material.id">
+            <li class="materials__item">
+              {{material.title}}
+            </li>
+          </ul>
 
           <h3>Уход:</h3>
 
@@ -127,60 +123,115 @@
             Не подвергать химчистке<br>
           </p>
         </div>
+        <div class="item__content"  v-else>
+          <h3>Доставка:</h3>
+
+          <p>
+            1. Курьерская доставка по Москве и Московской области – 290 ₽<br>
+            2.Самовывоз из магазина. Список и адреса магазинов Вы можете посмотреть здесь<br>
+          </p>
+
+          <h3>Возврат:</h3>
+
+          <p>
+            Любой возврат должен быть осуществлен в течение Возвраты в магазине БЕСПЛАТНО.<br>
+            Вы можете вернуть товары в любой магазин. Магазин должен быть расположен в стране, в которой Вы осуществили покупку.
+            БЕСПЛАТНЫЙ возврат в Пункт выдачи заказов.<br>
+            Для того чтобы вернуть товар в одном из наших Пунктов выдачи заказов, позвоните по телефону 8 800 600 90 09<br>
+          </p>
+
+        </div>
       </div>
     </section>
   </main>
 </template>
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapGetters } from 'vuex'
 import ProductColors from '@/components/ProductColors.vue'
 import LoadingPage from '@/components/LoadingPage.vue'
+import Counter from '@/components/Counter.vue'
 
 export default {
   data () {
     return {
       currentColorId: null,
-      loadPage: false
+      loadPage: false,
+      amountProduct: 1,
+      infoProduct: true,
+      productImageSelected: null,
+      firstProductImage: null
     }
   },
   components: {
-    ProductColors, LoadingPage
+    ProductColors, LoadingPage, Counter
   },
   computed: {
     ...mapState('products', ['productData']),
+    ...mapGetters('products', ['updateNewImages']),
     id () {
       return Number(this.$route.params.id)
     },
     colors () {
       return this.productData.colors.map(c => c.color)
     },
-    computedImage () {
-      const color = this.productData.colors.find(c => c.color.id === this.currentColorId)
-      return color ? color.gallery[0].file.url : null
+    materials () {
+      return this.productData.materials.map(m => m)
+    },
+    listImage () {
+      const arrImages = this.updateNewImages.find(id => id.id === this.currentColorId)
+      return arrImages ? arrImages.list : null
     }
   },
   methods: {
     ...mapActions('products', ['getLoadProduct']),
-    loadsPage () {
+    async loadsPage () {
       this.loadPage = true
-      this.loadPagesTimer = setTimeout(() => {
-        this.getLoadProduct(this.id)
+      try {
+        await this.getLoadProduct(this.id)
         this.loadPage = false
-      }, 2000)
+      } catch {
+        this.loadPage = false
+        this.$router.replace({ name: '404' })
+      }
+    },
+    computedImage () {
+      const color = this.productData.colors.find(c => c.color.id === this.currentColorId)
+      this.productImageSelected = color.gallery[0].file.url
+      this.firstProductImage = color.gallery[0].file.url
+    },
+    setProductImage (img) {
+      this.productImageSelected = img
     }
-  },
-  async created () {
-    await this.getLoadProduct(this.id)
-    this.currentColorId = this.productData.colors[0].color.id
   },
   watch: {
     '$route.params.id': {
-      handler () {
-        this.loadsPage()
+      async handler () {
+        await this.loadsPage()
+        this.currentColorId = this.productData.colors[0].color.id
       },
-      immediate: true
+      immediate: true,
+      deep: true
+    },
+    currentColorId: {
+      handler () {
+        this.computedImage()
+      }
     }
   }
 
 }
 </script>
+<style lang="scss">
+  .materials{
+      padding: 0;
+      margin: 0;
+      list-style-type: none;
+      &__item{
+        margin: 0 0 5px;
+        font-size: 16px;
+        line-height: 28px;
+        color: #222;
+        font-weight: 300;
+      }
+    }
+</style>
