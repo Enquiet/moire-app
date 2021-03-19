@@ -27,23 +27,15 @@
           <img width="570" height="570" :src="productImageSelected"  alt="Название товара">
         </div>
         <ul class="pics__list">
-           <li class="pics__item">
-            <a type="button" class="pics__link"
-            @click.prevent=" setProductImage(firstProductImage)"
-            :class="{'pics__link--current':firstProductImage === productImageSelected}"
-            >
-              <img width="98" height="98" :src="firstProductImage"  alt="Название товара">
-            </a>
-          </li>
           <li class="pics__item"
-          v-for="(img, index) in listImage"
-          :key="index"
+            v-for="(img, index) in listImage"
+            :key="index"
           >
             <a type="button" class="pics__link"
-            @click.prevent=" setProductImage(img)"
-            :class="{'pics__link--current':img === productImageSelected}"
+              @click.prevent=" setProductImage(img.file.url)"
+              :class="{'pics__link--current':img.file.url === productImageSelected}"
             >
-              <img width="98" height="98" :src="img"  alt="Название товара">
+              <img width="98" height="98" :src="img.file.url"  alt="Название товара">
             </a>
           </li>
         </ul>
@@ -55,7 +47,7 @@
            {{this.productData.title}}
         </h2>
         <div class="item__form">
-          <form class="form" action="#" method="POST">
+          <form class="form" action="#" method="POST" @submit.prevent="addToCart()">
             <div class="item__row item__row--center">
               <Counter :amount-product.sync="amountProduct"/>
 
@@ -76,8 +68,8 @@
               <fieldset class="form__block">
                 <legend class="form__legend">Размер</legend>
                 <label class="form__label form__label--small form__label--select">
-                  <select class="form__select" type="text" name="category">
-                    <option value="size.id" v-for="size in this.productData.sizes" :key="size.id">{{size.title}}</option>
+                  <select class="form__select" type="text" name="category" v-model.number="productSize">
+                    <option :value="size.id" v-for="size in this.productData.sizes" :key="size.id">{{size.title}}</option>
                   </select>
                 </label>
               </fieldset>
@@ -159,7 +151,7 @@ export default {
       amountProduct: 1,
       infoProduct: true,
       productImageSelected: null,
-      firstProductImage: null
+      productSize: 0
     }
   },
   components: {
@@ -167,7 +159,7 @@ export default {
   },
   computed: {
     ...mapState('products', ['productData']),
-    ...mapGetters('products', ['updateNewImages']),
+    ...mapGetters('products', ['addFakeImages']),
     id () {
       return Number(this.$route.params.id)
     },
@@ -178,12 +170,21 @@ export default {
       return this.productData.materials.map(m => m)
     },
     listImage () {
-      const arrImages = this.updateNewImages.find(id => id.id === this.currentColorId)
-      return arrImages ? arrImages.list : null
+      const arrImages = this.addFakeImages.find(img => img.color.id === this.currentColorId)
+      return arrImages ? arrImages.gallery : null
     }
   },
   methods: {
     ...mapActions('products', ['getLoadProduct']),
+    ...mapActions('baskets', ['addProductToCard']),
+    async addToCart () {
+      await this.addProductToCard({
+        productId: this.productData.id,
+        colorId: this.currentColorId,
+        sizeId: this.productSize,
+        quantity: this.amountProduct
+      })
+    },
     async loadsPage () {
       this.loadPage = true
       try {
@@ -194,11 +195,6 @@ export default {
         this.$router.replace({ name: '404' })
       }
     },
-    computedImage () {
-      const color = this.productData.colors.find(c => c.color.id === this.currentColorId)
-      this.productImageSelected = color.gallery[0].file.url
-      this.firstProductImage = color.gallery[0].file.url
-    },
     setProductImage (img) {
       this.productImageSelected = img
     }
@@ -208,13 +204,15 @@ export default {
       async handler () {
         await this.loadsPage()
         this.currentColorId = this.productData.colors[0].color.id
+        this.productSize = this.productData.sizes[0].id
       },
       immediate: true,
       deep: true
     },
     currentColorId: {
       handler () {
-        this.computedImage()
+        const color = this.productData.colors.find(c => c.color.id === this.currentColorId)
+        this.productImageSelected = color.gallery[0].file.url
       }
     }
   }

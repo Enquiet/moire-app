@@ -1,5 +1,5 @@
 import api from '@/api/api.js'
-import img from '@/helpers/image.js'
+import fakeImages from '@/helpers/image.js'
 export default {
   namespaced: true,
   state: {
@@ -19,13 +19,14 @@ export default {
     }
   },
   getters: {
-    updateNewImages (state) {
+    // добавляю свои картинки
+    addFakeImages (state) {
       return state.productData.colors.map(item => {
-        const url = img.map(e => e.image)
+        const gallery = [...item.gallery, ...fakeImages]
         return {
-          ...item.gallery[0].file,
-          id: item.color.id,
-          list: url
+          color: item.color,
+          id: item.id,
+          gallery
         }
       })
     }

@@ -23,20 +23,40 @@ export default {
   },
   actions: {
     async getCategies ({ commit }) {
-      const categoies = await api.fetchApi('api/productCategories')
-      commit('updateProductCategoies', categoies)
+      try {
+        const categoies = await api.fetchApi('api/productCategories')
+        commit('updateProductCategoies', categoies)
+      } catch (e) {
+        console.log('оишбка в экшене getCategies')
+        throw e
+      }
     },
     async getMaterial ({ commit }) {
-      const materials = await api.fetchApi('api/materials')
-      commit('updateMaterail', materials)
+      try {
+        const materials = await api.fetchApi('api/materials')
+        commit('updateMaterail', materials)
+      } catch (e) {
+        console.log('оишбка в экшене getMaterial')
+        throw e
+      }
     },
     async getSeasons ({ commit }) {
-      const seasons = await api.fetchApi('api/seasons')
-      commit('updateSeasonProducts', seasons)
+      try {
+        const seasons = await api.fetchApi('api/seasons')
+        commit('updateSeasonProducts', seasons)
+      } catch (e) {
+        console.log('оишбка в экшене getSeasons')
+        throw e
+      }
     },
     async getColor ({ commit }) {
-      const colors = await api.fetchApi('api/colors')
-      commit('updateColor', colors)
+      try {
+        const colors = await api.fetchApi('api/colors')
+        commit('updateColor', colors)
+      } catch (e) {
+        console.log('оишбка в экшене getColor')
+        throw e
+      }
     }
   }
 }
