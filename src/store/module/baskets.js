@@ -16,6 +16,11 @@ export default {
       state.cartProductData = product
     }
   },
+  getters: {
+    totalCartProduct (state) {
+      return state.cartProductData.items.reduce((acc, item) => (item.price * item.quantity) + acc, 0)
+    }
+  },
   actions: {
     async loadToCart (context) {
       try {
@@ -49,18 +54,31 @@ export default {
         throw e
       }
     },
-    async setAmountProduct ({ commit, state }, {
-      productId,
+    async updateAmountProduct ({ commit, state }, {
+      basketItemId,
       quantity
     }) {
       try {
         const product = await api.fetchApi(`api/baskets/products?userAccessKey=${state.userAccessKey}`, 'PUT', {
-          productId: productId,
-          quantity: quantity
+          basketItemId,
+          quantity
         })
         commit('updateProductToCard', product)
       } catch (e) {
-        console.log('ошибка в экшене setAmountProduct')
+        console.log('ошибка в экшене updateAmountProduct')
+        throw e
+      }
+    },
+    async deleteProductCard ({ commit, state }, {
+      basketItemId
+    }) {
+      try {
+        const deleteProduct = await api.fetchApi(`api/baskets/products?userAccessKey=${state.userAccessKey}`, 'DELETE', {
+          basketItemId
+        })
+        commit('updateProductToCard', deleteProduct)
+      } catch (e) {
+        console.log('ошибка в экшене deleteProductCard')
         throw e
       }
     }

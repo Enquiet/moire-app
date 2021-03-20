@@ -23,7 +23,7 @@
       {{productTotalPrice}} ₽
     </b>
 
-    <button class="product__del button-del" type="button" aria-label="Удалить товар из корзины">
+    <button class="product__del button-del" type="button" aria-label="Удалить товар из корзины" @click.prevent="deleteProduct">
       <svg width="20" height="20" fill="currentColor">
         <use xlink:href="#icon-close"></use>
       </svg>
@@ -44,7 +44,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions('baskets', ['setAmountProduct'])
+    ...mapActions('baskets', ['updateAmountProduct', 'deleteProductCard']),
+    deleteProduct () {
+      this.deleteProductCard({ basketItemId: this.product.id })
+    }
   },
   computed: {
     amount: {
@@ -52,8 +55,8 @@ export default {
         return this.product.quantity
       },
       set (val) {
-        this.setAmountProduct({
-          productId: this.productInfo.id,
+        this.updateAmountProduct({
+          basketItemId: this.product.id,
           quantity: val
         })
       }

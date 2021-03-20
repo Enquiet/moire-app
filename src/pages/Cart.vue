@@ -44,7 +44,7 @@
             Мы&nbsp;посчитаем стоимость доставки на&nbsp;следующем этапе
           </p>
           <p class="cart__price">
-            Итого: <span>4 070 ₽</span>
+            Итого: <span>{{totalCartProduct}} ₽</span>
           </p>
 
           <button class="cart__button button button--primery" type="submit">
@@ -57,10 +57,11 @@
 </template>
 <script>
 import CartItem from '@/components/CartItem.vue'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 export default {
   computed: {
     ...mapState('baskets', ['cartProductData']),
+    ...mapGetters('baskets', ['totalCartProduct']),
     loadProductCart () {
       return this.cartProductData.items ? this.cartProductData.items : []
     }
