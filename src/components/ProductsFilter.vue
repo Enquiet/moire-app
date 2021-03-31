@@ -29,8 +29,8 @@
 
     <fieldset class="form__block">
       <legend class="form__legend">Цвет</legend>
-      <ProductColors
-      :current-color.sync="currentColor"
+      <ProductFilterColors
+      :current-color.sync="currentColors"
       :colors="colorsData"
       />
     </fieldset>
@@ -52,7 +52,7 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 import ProductFilterCheck from '@/components/ProductFilterCheck'
-import ProductColors from '@/components/ProductColors.vue'
+import ProductFilterColors from '@/components/ProductFilterColors.vue'
 export default {
   data () {
     return {
@@ -61,7 +61,7 @@ export default {
       currentProductId: 0,
       currentMaterial: [],
       currentSeasons: [],
-      currentColor: 0,
+      currentColors: [],
       materialTitle: 'Материал',
       seasonsTitle: 'Коллекции'
     }
@@ -88,12 +88,12 @@ export default {
       default: () => []
     },
     colorIds: {
-      type: Number,
-      default: 0
+      type: Array,
+      default: () => []
     }
   },
   components: {
-    ProductFilterCheck, ProductColors
+    ProductFilterCheck, ProductFilterColors
   },
   computed: {
     ...mapState('filters', ['categoiesData', 'materialsData', 'seasonsData', 'colorsData'])
@@ -115,7 +115,7 @@ export default {
       this.currentSeasons = value
     },
     colorIds (value) {
-      this.currentColor = value
+      this.currentColors = value
     }
   },
   methods: {
@@ -126,7 +126,7 @@ export default {
       this.$emit('update:minPrice', this.currentMinPrice)
       this.$emit('update:materialIds', this.currentMaterial)
       this.$emit('update:seasonIds', this.currentSeasons)
-      this.$emit('update:colorIds', this.currentColor)
+      this.$emit('update:colorIds', this.currentColors)
     },
     clearBtn () {
       this.$emit('update:categoryId', 0)
@@ -134,7 +134,7 @@ export default {
       this.$emit('update:minPrice', 0)
       this.$emit('update:materialIds', [])
       this.$emit('update:seasonIds', [])
-      this.$emit('update:colorIds', 0)
+      this.$emit('update:colorIds', [])
     }
   },
   async mounted () {

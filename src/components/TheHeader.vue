@@ -2,9 +2,9 @@
   <header class="header">
     <div class="header__wrapper container">
         <span class="header__info">Каталог</span>
-        <a class="header__logo" href="#">
+        <router-link class="header__logo" :to="{name: 'main'}">
             <img src="img/svg/moire_logo.svg" alt="Логотип интернет магазина Технозавррр" width="116" height="34">
-        </a>
+        </router-link>
         <a class="header__tel" href="tel:8 800 600 90 09">
           8 800 600 90 09
         </a>
@@ -15,7 +15,7 @@
             <span class="header__count" aria-label="Количество товаров" v-if="productIndncator >= 1">{{productIndncator}}</span>
         </router-link>
     </div>
-</header>
+  </header>
 </template>
 <script>
 import { mapState } from 'vuex'

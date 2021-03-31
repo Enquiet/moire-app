@@ -1,7 +1,7 @@
 <template>
   <div class="cart-error" v-if="!loadProductCart.length">
     <h1 class="cart-error__title">В вашей корзине нет товара </h1>
-    <router-link class="cart-error__btn" :to="{name:'main'}">Вернуться в котолок</router-link>
+    <router-link class="cart-error__btn" :to="{name:'main'}">Вернуться в каталог</router-link>
   </div>
   <main class="content container" v-else>
     <div class="content__top">
@@ -47,9 +47,9 @@
             Итого: <span>{{totalCartProduct}} ₽</span>
           </p>
 
-          <button class="cart__button button button--primery" type="submit">
+          <router-link :to="{name: 'ordering'}"  class="cart__button button button--primery" type="submit">
             Оформить заказ
-          </button>
+          </router-link>
         </div>
       </form>
     </section>

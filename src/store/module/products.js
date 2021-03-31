@@ -42,7 +42,7 @@ export default {
       seasons,
       color
     }) {
-      const list = await api.fetchApi(`api/products?categoryId=${categoryId}&materialIds[]=${materials}&seasonIds[]=${seasons}&colorIds[]=${color}'&page=${page}&limit=${limit}&minPrice=${minPrice}&maxPrice=${maxPrice}`)
+      const list = await api.fetchApi(`api/products?${categoryId}&${materials}&${seasons}&${color}&${page}&${limit}&${minPrice}&${maxPrice}`)
       commit('updateProductDate', list)
       commit('updatePagination', list)
     },

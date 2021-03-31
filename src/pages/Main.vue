@@ -35,10 +35,9 @@ export default {
         categoryId: 0,
         materialIds: [],
         seasonIds: [],
-        colorIds: 0,
+        colorIds: [],
         minPrice: 0,
         maxPrice: 0
-
       },
       page: 1,
       limitProductPage: 6
@@ -54,14 +53,14 @@ export default {
     ...mapState('products', ['pagination', 'productsData']),
     filters () {
       return {
-        categoryId: this.productFilter.categoryId,
-        minPrice: this.productFilter.minPrice,
-        maxPrice: this.productFilter.maxPrice,
-        limit: this.limitProductPage,
-        page: this.page,
-        materials: this.productFilter.materialIds,
-        seasons: this.productFilter.seasonIds,
-        color: this.productFilter.colorIds
+        categoryId: `categoryId=${this.productFilter.categoryId}`,
+        minPrice: `minPrice=${this.productFilter.minPrice}`,
+        maxPrice: `maxPrice=${this.productFilter.maxPrice}`,
+        limit: `limit=${this.limitProductPage}`,
+        page: `page=${this.page}`,
+        materials: `materialIds[]=${this.productFilter.materialIds}`,
+        seasons: `seasonIds[]=${this.productFilter.seasonIds}`,
+        color: `colorIds[]=${this.productFilter.colorIds}`
       }
     }
   },
