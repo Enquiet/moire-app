@@ -42,45 +42,8 @@
           </div>
 
           <div class="cart__options">
-            <h3 class="cart__title">Доставка</h3>
-            <ul class="cart__options options">
-              <li class="options__item">
-                <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="delivery" value="0" checked="">
-                  <span class="options__value">
-                    Самовывоз <b>бесплатно</b>
-                  </span>
-                </label>
-              </li>
-              <li class="options__item">
-                <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="delivery" value="500">
-                  <span class="options__value">
-                    Курьером <b>290 ₽</b>
-                  </span>
-                </label>
-              </li>
-            </ul>
-
-            <h3 class="cart__title">Оплата</h3>
-            <ul class="cart__options options">
-              <li class="options__item">
-                <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="pay" value="card" checked="">
-                  <span class="options__value">
-                    Картой при получении
-                  </span>
-                </label>
-              </li>
-              <li class="options__item">
-                <label class="options__label">
-                  <input class="options__radio sr-only" type="radio" name="pay" value="cash">
-                  <span class="options__value">
-                    Наличными при получении
-                  </span>
-                </label>
-              </li>
-            </ul>
+            <FormWays :item-ways="deliverieData" :ways-id.sync="createOrder.deliveryTypeId" title-wais="Доставка"/>
+            <FormWays :item-ways="paymentsData" :ways-id.sync="createOrder.paymentTypeId" title-wais="Оплата"/>
           </div>
         </div>
 
@@ -114,6 +77,7 @@
 </template>
 <script>
 import FormText from '@/components/FormText.vue'
+import FormWays from '@/components/FormWays.vue'
 import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
   data () {
@@ -131,10 +95,11 @@ export default {
     }
   },
   components: {
-    FormText
+    FormText, FormWays
   },
   computed: {
     ...mapState('baskets', ['cartProductData']),
+    ...mapState('order', ['deliverieData', 'paymentsData']),
     ...mapGetters('baskets', ['totalCartProduct']),
     loadProductCart () {
       return this.cartProductData.items ? this.cartProductData.items : []
@@ -152,15 +117,21 @@ export default {
     }
   },
   methods: {
-    ...mapActions('order', ['orderLoadingData']),
+    ...mapActions('order', ['orderLoadingData', 'deliverieLoadingData', 'paymentsLoadingData']),
     async addOrder () {
       try {
         await this.orderLoadingData(this.order)
       } catch (e) {
-        console.log(e.response.error.request)
-        this.error = 0
+        console.log('e.response.error.request')
+        // this.error = e.response.error.request
       }
     }
+  },
+  async created () {
+    await this.deliverieLoadingData()
+    await this.paymentsLoadingData()
+    this.createOrder.deliveryTypeId = this.deliverieData[0].id
+    this.createOrder.paymentTypeId = this.paymentsData[0].id
   }
 }
 </script>

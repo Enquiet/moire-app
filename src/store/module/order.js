@@ -2,15 +2,23 @@ import api from '@/api/api.js'
 export default {
   namespaced: true,
   state: {
-    orderData: {}
+    orderData: {},
+    deliverieData: [],
+    paymentsData: []
   },
   mutations: {
     updateOrderData (state, order) {
       state.orderData = order
+    },
+    updateDeliverieData (state, deliverie) {
+      state.deliverieData = deliverie
+    },
+    updatePaymentsData (state, payments) {
+      state.paymentsData = payments
     }
   },
   actions: {
-    async orderLoadingData ({ commit, state }, {
+    async orderLoadingData ({ commit }, {
       name,
       address,
       phone,
@@ -20,7 +28,7 @@ export default {
       comment
     }) {
       try {
-        const order = await api.fetchApi('api/orders', 'POST', {
+        const order = await api.fetchApi(`api/orders?userAccessKey=${localStorage.getItem('userAccessKey')}`, 'POST', {
           name,
           address,
           phone,
@@ -32,6 +40,24 @@ export default {
         commit('updateOrderData', order)
       } catch (e) {
         console.log('Ошибка в экшане orderLoadingData')
+        throw e
+      }
+    },
+    async deliverieLoadingData ({ commit }) {
+      try {
+        const deliverie = await api.fetchApi('api/deliveries')
+        commit('updateDeliverieData', deliverie)
+      } catch (e) {
+        console.log('Ошибка в экшане deliverieLoadingData')
+        throw e
+      }
+    },
+    async paymentsLoadingData ({ commit }) {
+      try {
+        const payments = await api.fetchApi('api/payments?deliveryTypeId=1')
+        commit('updatePaymentsData', payments)
+      } catch (e) {
+        console.log('Ошибка в экшане paymentsLoadingData')
         throw e
       }
     }
