@@ -1,6 +1,6 @@
 <template>
-  <FormField :title="titleInput" :error="error">
-    <input class="form__input" type="type" name="name" v-model="inputValue" :placeholder="placeholder">
+  <FormField :title="titleInput">
+    <textarea class="form__input form__input--area" type="type" name="comments" v-model="inputValue" :placeholder="placeholder"></textarea>
   </FormField>
 </template>
 <script>
@@ -19,10 +19,6 @@ export default {
     type: {
       default: 'text'
     },
-    error: {
-      type: String,
-      default: ''
-    }
   },
   computed: {
     inputValue: {

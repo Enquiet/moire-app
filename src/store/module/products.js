@@ -8,7 +8,7 @@ export default {
     productData: null
   },
   mutations: {
-    updateProductDate (state, list) {
+    updateProductList (state, list) {
       state.productsData = list.items
     },
     updatePagination (state, { pagination }) {
@@ -43,7 +43,7 @@ export default {
       color
     }) {
       const list = await api.fetchApi(`api/products?${categoryId}&${materials}&${seasons}&${color}&${page}&${limit}&${minPrice}&${maxPrice}`)
-      commit('updateProductDate', list)
+      commit('updateProductList', list)
       commit('updatePagination', list)
     },
     async getLoadProduct ({ commit }, id) {

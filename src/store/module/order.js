@@ -52,9 +52,11 @@ export default {
         throw e
       }
     },
-    async paymentsLoadingData ({ commit }) {
+    async paymentsLoadingData ({ commit }, {
+      deliveryTypeId
+    }) {
       try {
-        const payments = await api.fetchApi('api/payments?deliveryTypeId=1')
+        const payments = await api.fetchApi(`api/payments?deliveryTypeId=${deliveryTypeId}`)
         commit('updatePaymentsData', payments)
       } catch (e) {
         console.log('Ошибка в экшане paymentsLoadingData')

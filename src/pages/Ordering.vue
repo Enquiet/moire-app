@@ -30,15 +30,11 @@
       <form class="cart__form form" action="#" method="POST" @submit.prevent="addOrder">
         <div class="cart__field">
           <div class="cart__data">
-            <FormText placeholder="Введите ваше полное имя" type="text" title-input="ФИО" v-model="createOrder.name" />
-            <FormText placeholder="Введите ваш адрес" type="text" title-input="Адрес доставки" v-model="createOrder.address" />
-            <FormText placeholder="Введите ваш телефон" type="tel" title-input="Телефон" v-model="createOrder.phone" />
-            <FormText placeholder="Введи ваш Email" type="email" title-input="Email" v-model="createOrder.email" />
-
-            <label class="form__label">
-              <textarea class="form__input form__input--area" name="comments" placeholder="Ваши пожелания"></textarea>
-              <span class="form__value">Комментарий к заказу</span>
-            </label>
+            <FormText placeholder="Введите ваше полное имя" type="text" title-input="ФИО"  :error="error.name" v-model="createOrder.name" />
+            <FormText placeholder="Введите ваш адрес" type="text" title-input="Адрес доставки" :error="error.address" v-model="createOrder.address" />
+            <FormText placeholder="Введите ваш телефон" type="tel" title-input="Телефон" :error="error.phone" v-model="createOrder.phone" />
+            <FormText placeholder="Введи ваш Email" type="email" title-input="Email" :error="error.email" v-model="createOrder.email" />
+            <FormAreatext placeholder="Ваши пожелания" type="text" title-input="Комментарий к заказу" v-model="createOrder.comment" />
           </div>
 
           <div class="cart__options">
@@ -48,7 +44,7 @@
         </div>
 
         <div class="cart__block">
-          <ul class="cart__orders">
+          <ul class="cart__orders" v-if="loadProductCart.length">
             <li class="cart__order" v-for="item in loadProductCart" :key="item.id">
               <h3>{{item.product.title}}</h3>
               <b>{{item.product.price * item.quantity}} ₽</b>
@@ -57,18 +53,18 @@
           </ul>
 
           <div class="cart__total">
-            <p>Доставка: <b>бесплатно</b></p>
-            <p>Итого: <b>{{loadProductCart.length}}</b> товара на сумму <b>{{totalCartProduct}} ₽</b></p>
+            <p>Доставка: <b>{{priceDelivery}}</b></p>
+            <p>Итого: <b>{{loadProductCart.length}}</b> товара на сумму <b>{{totalPrice}} ₽</b></p>
           </div>
 
           <button class="cart__button button button--primery" type="submit" >
             Оформить заказ
           </button>
         </div>
-        <div class="cart__error form__error-block">
+        <div class="cart__error form__error-block" v-if="errorMessage">
           <h4>Заявка не отправлена!</h4>
           <p>
-            Похоже произошла ошибка. Попробуйте отправить снова или перезагрузите страницу.
+            {{errorMessage}}
           </p>
         </div>
       </form>
@@ -77,6 +73,7 @@
 </template>
 <script>
 import FormText from '@/components/FormText.vue'
+import FormAreatext from '@/components/FormAreatext.vue'
 import FormWays from '@/components/FormWays.vue'
 import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
@@ -91,11 +88,12 @@ export default {
         paymentTypeId: 0,
         comment: ''
       },
-      error: {}
+      error: {},
+      errorMessage: ''
     }
   },
   components: {
-    FormText, FormWays
+    FormText, FormWays, FormAreatext
   },
   computed: {
     ...mapState('baskets', ['cartProductData']),
@@ -114,24 +112,42 @@ export default {
         paymentTypeId: this.createOrder.paymentTypeId,
         comment: this.createOrder.comment
       }
+    },
+    priceDelivery () {
+      const delivery = this.deliverieData.find(p => p.id === this.createOrder.deliveryTypeId)
+      return delivery.price
+    },
+    totalPrice () {
+      return this.totalCartProduct + Number(this.priceDelivery)
+    },
+    deliveryId () {
+      return { deliveryTypeId: this.createOrder.deliveryTypeId }
     }
   },
   methods: {
     ...mapActions('order', ['orderLoadingData', 'deliverieLoadingData', 'paymentsLoadingData']),
     async addOrder () {
       try {
+        this.error = {}
+        this.errorMessage = ''
         await this.orderLoadingData(this.order)
       } catch (e) {
-        console.log('e.response.error.request')
-        // this.error = e.response.error.request
+        this.error = e.request || {}
+        this.errorMessage = e.message || ''
       }
     }
   },
   async created () {
     await this.deliverieLoadingData()
-    await this.paymentsLoadingData()
     this.createOrder.deliveryTypeId = this.deliverieData[0].id
-    this.createOrder.paymentTypeId = this.paymentsData[0].id
+    await this.paymentsLoadingData(this.deliveryId)
+  },
+  watch: {
+    'createOrder.deliveryTypeId': {
+      async handler () {
+        await this.paymentsLoadingData(this.deliveryId)
+      }
+    }
   }
 }
 </script>

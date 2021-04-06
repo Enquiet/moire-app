@@ -9,11 +9,15 @@ export default {
       },
       body: JSON.stringify(data)
     })
+    const result = await response.json()
     if (!response.ok) {
-      const error = new Error(response.error)
+      const error = new Error(response.statusText)
+      const { code, message, request } = result.error
+      error.code = code
+      error.message = message
+      error.request = request
       throw error
     }
-    const json = await response.json()
-    return json
+    return result
   }
 }
