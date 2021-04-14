@@ -18,7 +18,7 @@ export default {
     },
     type: {
       default: 'text'
-    },
+    }
   },
   computed: {
     inputValue: {

@@ -19,24 +19,13 @@ export default {
   },
   actions: {
     async orderLoadingData ({ commit }, {
-      name,
-      address,
-      phone,
-      email,
-      deliveryTypeId,
-      paymentTypeId,
-      comment
+      ...data
     }) {
       try {
         const order = await api.fetchApi(`api/orders?userAccessKey=${localStorage.getItem('userAccessKey')}`, 'POST', {
-          name,
-          address,
-          phone,
-          email,
-          deliveryTypeId,
-          paymentTypeId,
-          comment
+          ...data
         })
+        console.log(data)
         commit('updateOrderData', order)
       } catch (e) {
         console.log('Ошибка в экшане orderLoadingData')
@@ -60,6 +49,17 @@ export default {
         commit('updatePaymentsData', payments)
       } catch (e) {
         console.log('Ошибка в экшане paymentsLoadingData')
+        throw e
+      }
+    },
+    async orderMadeData ({ commit }, {
+      id
+    }) {
+      try {
+        const orderMade = await api.fetchApi(`api/orders/${id}?userAccessKey=${localStorage.getItem('userAccessKey')}`)
+        commit('updateOrderData', orderMade)
+      } catch (e) {
+        console.log('Ошибка в экшане orderMadeData')
         throw e
       }
     }

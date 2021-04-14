@@ -38,29 +38,23 @@
           </div>
 
           <div class="cart__options">
-            <FormWays :item-ways="deliverieData" :ways-id.sync="createOrder.deliveryTypeId" title-wais="Доставка"/>
-            <FormWays :item-ways="paymentsData" :ways-id.sync="createOrder.paymentTypeId" title-wais="Оплата"/>
+            <FormWays
+              :item-ways="deliverieData"
+              :ways-id.sync="createOrder.deliveryTypeId"
+              title-wais="Доставка"
+            />
+            <FormWays
+              :item-ways="paymentsData"
+              :ways-id.sync="createOrder.paymentTypeId"
+              title-wais="Оплата"
+            />
           </div>
         </div>
-
-        <div class="cart__block">
-          <ul class="cart__orders" v-if="loadProductCart.length">
-            <li class="cart__order" v-for="item in loadProductCart" :key="item.id">
-              <h3>{{item.product.title}}</h3>
-              <b>{{item.product.price * item.quantity}} ₽</b>
-              <span>Артикул: {{item.product.id}}</span>
-            </li>
-          </ul>
-
-          <div class="cart__total">
-            <p>Доставка: <b>{{priceDelivery}}</b></p>
-            <p>Итого: <b>{{loadProductCart.length}}</b> товара на сумму <b>{{totalPrice}} ₽</b></p>
-          </div>
-
-          <button class="cart__button button button--primery" type="submit" >
-            Оформить заказ
-          </button>
-        </div>
+        <OrderProductInfo
+          :product-list="loadProductCart"
+          :total-price="totalPrice"
+          :price-delivery="priceDelivery"
+        />
         <div class="cart__error form__error-block" v-if="errorMessage">
           <h4>Заявка не отправлена!</h4>
           <p>
@@ -75,6 +69,7 @@
 import FormText from '@/components/FormText.vue'
 import FormAreatext from '@/components/FormAreatext.vue'
 import FormWays from '@/components/FormWays.vue'
+import OrderProductInfo from '@/components/OrderProductInfo.vue'
 import { mapState, mapGetters, mapActions } from 'vuex'
 export default {
   data () {
@@ -93,12 +88,12 @@ export default {
     }
   },
   components: {
-    FormText, FormWays, FormAreatext
+    FormText, FormWays, FormAreatext, OrderProductInfo
   },
   computed: {
-    ...mapState('baskets', ['cartProductData']),
-    ...mapState('order', ['deliverieData', 'paymentsData']),
     ...mapGetters('baskets', ['totalCartProduct']),
+    ...mapState('baskets', ['cartProductData']),
+    ...mapState('order', ['deliverieData', 'paymentsData', 'orderData']),
     loadProductCart () {
       return this.cartProductData.items ? this.cartProductData.items : []
     },
@@ -113,15 +108,15 @@ export default {
         comment: this.createOrder.comment
       }
     },
+    deliveryId () {
+      return { deliveryTypeId: this.createOrder.deliveryTypeId }
+    },
     priceDelivery () {
       const delivery = this.deliverieData.find(p => p.id === this.createOrder.deliveryTypeId)
-      return delivery.price
+      return delivery ? Number(delivery.price) : 0
     },
     totalPrice () {
       return this.totalCartProduct + Number(this.priceDelivery)
-    },
-    deliveryId () {
-      return { deliveryTypeId: this.createOrder.deliveryTypeId }
     }
   },
   methods: {
@@ -131,6 +126,8 @@ export default {
         this.error = {}
         this.errorMessage = ''
         await this.orderLoadingData(this.order)
+        console.log(this.orderData.id)
+        this.$router.push({ name: 'orderInfo', params: { id: this.orderData.id } })
       } catch (e) {
         this.error = e.request || {}
         this.errorMessage = e.message || ''
