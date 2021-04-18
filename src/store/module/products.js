@@ -19,7 +19,7 @@ export default {
     }
   },
   getters: {
-    // добавляю свои картинки
+    // добавляю свои картинки т.к. с бэка приходит одна картинка
     addFakeImages (state) {
       return state.productData.colors.map(item => {
         const gallery = [...item.gallery, ...fakeImages]
@@ -34,15 +34,15 @@ export default {
   actions: {
     async getLoadProducts ({ commit }, {
       categoryId,
+      materialIds,
+      seasonIds,
+      colorIds,
       minPrice,
       maxPrice,
-      limit,
       page,
-      materials,
-      seasons,
-      color
+      limit
     }) {
-      const list = await api.fetchApi(`api/products?${categoryId}&${materials}&${seasons}&${color}&${page}&${limit}&${minPrice}&${maxPrice}`)
+      const list = await api.fetchApi(`api/products?categoryId=${categoryId}&materialIds[]=${materialIds}&seasonIds[]=${seasonIds}&colorIds[]=${colorIds}&minPrice=${minPrice}&maxPrice=${maxPrice}&page=${page}&limit=${limit}`)
       commit('updateProductList', list)
       commit('updatePagination', list)
     },

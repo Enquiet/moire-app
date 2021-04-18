@@ -12,8 +12,8 @@
           {{product.price}} ₽
         </span>
         <ProductColors
-        :current-color.sync="currentColorId"
-        :colors="colors"
+          :current-color.sync="currentColorId"
+          :colors="colors"
         />
     </li>
 </template>

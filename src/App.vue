@@ -28,7 +28,6 @@ export default {
   created () {
     const saveAccessKey = localStorage.getItem('userAccessKey')
     if (saveAccessKey) {
-      console.log(saveAccessKey)
       this.updateAccessKey(saveAccessKey)
     }
     this.getLoadCart()

@@ -15,9 +15,9 @@
       />
     </div>
       <Pagination
-      :page.sync="page"
+      :page.sync="productFilter.page"
       :total-products="pagination"
-      :per-products="limitProductPage"
+      :per-products="productFilter.limit"
       />
   </main>
 </template>
@@ -37,10 +37,10 @@ export default {
         seasonIds: [],
         colorIds: [],
         minPrice: 0,
-        maxPrice: 0
-      },
-      page: 1,
-      limitProductPage: 6
+        maxPrice: 0,
+        page: 1,
+        limit: 6
+      }
     }
   },
   components: {
@@ -50,27 +50,18 @@ export default {
     ...mapActions('products', ['getLoadProducts'])
   },
   computed: {
-    ...mapState('products', ['pagination', 'productsData']),
-    filters () {
-      return {
-        categoryId: `categoryId=${this.productFilter.categoryId}`,
-        minPrice: `minPrice=${this.productFilter.minPrice}`,
-        maxPrice: `maxPrice=${this.productFilter.maxPrice}`,
-        limit: `limit=${this.limitProductPage}`,
-        page: `page=${this.page}`,
-        materials: `materialIds[]=${this.productFilter.materialIds}`,
-        seasons: `seasonIds[]=${this.productFilter.seasonIds}`,
-        color: `colorIds[]=${this.productFilter.colorIds}`
-      }
-    }
+    ...mapState('products', ['pagination', 'productsData'])
   },
   watch: {
-    page () {
-      this.getLoadProducts(this.filters)
+    optionPage: {
+      handler () {
+        this.getLoadProducts(this.productFilter)
+      },
+      deep: true
     },
     productFilter: {
       handler () {
-        this.getLoadProducts(this.filters)
+        this.getLoadProducts(this.productFilter)
       },
       immediate: true,
       deep: true

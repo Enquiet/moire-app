@@ -3,14 +3,14 @@
     <div class="content__top">
       <ul class="breadcrumbs">
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="index.html">
-            Каталог
-          </a>
+          <router-link class="breadcrumbs__link"  :to="{name: 'main'}">
+          Каталог
+        </router-link>
         </li>
         <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="cart.html">
+          <router-link class="breadcrumbs__link" :to="{name: 'cart'}">
             Корзина
-          </a>
+          </router-link>
         </li>
         <li class="breadcrumbs__item">
           <a class="breadcrumbs__link">
@@ -30,22 +30,22 @@
       <form class="cart__form form" action="#" method="POST" @submit.prevent="addOrder">
         <div class="cart__field">
           <div class="cart__data">
-            <FormText placeholder="Введите ваше полное имя" type="text" title-input="ФИО"  :error="error.name" v-model="createOrder.name" />
-            <FormText placeholder="Введите ваш адрес" type="text" title-input="Адрес доставки" :error="error.address" v-model="createOrder.address" />
-            <FormText placeholder="Введите ваш телефон" type="tel" title-input="Телефон" :error="error.phone" v-model="createOrder.phone" />
-            <FormText placeholder="Введи ваш Email" type="email" title-input="Email" :error="error.email" v-model="createOrder.email" />
-            <FormAreatext placeholder="Ваши пожелания" type="text" title-input="Комментарий к заказу" v-model="createOrder.comment" />
+            <FormText placeholder="Введите ваше полное имя" type="text" title-input="ФИО"  :error="error.name" v-model="userInfo.name" />
+            <FormText placeholder="Введите ваш адрес" type="text" title-input="Адрес доставки" :error="error.address" v-model="userInfo.address" />
+            <FormText placeholder="Введите ваш телефон" type="tel" title-input="Телефон" :error="error.phone" v-model="userInfo.phone" />
+            <FormText placeholder="Введи ваш Email" type="email" title-input="Email" :error="error.email" v-model="userInfo.email" />
+            <FormAreatext placeholder="Ваши пожелания" type="text" title-input="Комментарий к заказу" v-model="userInfo.comment" />
           </div>
 
           <div class="cart__options">
             <FormWays
               :item-ways="deliverieData"
-              :ways-id.sync="createOrder.deliveryTypeId"
+              :ways-id.sync="userInfo.deliveryTypeId"
               title-wais="Доставка"
             />
             <FormWays
               :item-ways="paymentsData"
-              :ways-id.sync="createOrder.paymentTypeId"
+              :ways-id.sync="userInfo.paymentTypeId"
               title-wais="Оплата"
             />
           </div>
@@ -70,11 +70,11 @@ import FormText from '@/components/FormText.vue'
 import FormAreatext from '@/components/FormAreatext.vue'
 import FormWays from '@/components/FormWays.vue'
 import OrderProductInfo from '@/components/OrderProductInfo.vue'
-import { mapState, mapGetters, mapActions } from 'vuex'
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex'
 export default {
   data () {
     return {
-      createOrder: {
+      userInfo: {
         name: '',
         address: '',
         phone: '',
@@ -97,22 +97,11 @@ export default {
     loadProductCart () {
       return this.cartProductData.items ? this.cartProductData.items : []
     },
-    order () {
-      return {
-        name: this.createOrder.name,
-        address: this.createOrder.address,
-        phone: this.createOrder.phone,
-        email: this.createOrder.email,
-        deliveryTypeId: this.createOrder.deliveryTypeId,
-        paymentTypeId: this.createOrder.paymentTypeId,
-        comment: this.createOrder.comment
-      }
-    },
     deliveryId () {
-      return { deliveryTypeId: this.createOrder.deliveryTypeId }
+      return this.userInfo.deliveryTypeId
     },
     priceDelivery () {
-      const delivery = this.deliverieData.find(p => p.id === this.createOrder.deliveryTypeId)
+      const delivery = this.deliverieData.find(p => p.id === this.userInfo.deliveryTypeId)
       return delivery ? Number(delivery.price) : 0
     },
     totalPrice () {
@@ -120,27 +109,28 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('baskets', ['clearCartProduct']),
     ...mapActions('order', ['orderLoadingData', 'deliverieLoadingData', 'paymentsLoadingData']),
     async addOrder () {
       try {
         this.error = {}
         this.errorMessage = ''
-        await this.orderLoadingData(this.order)
-        console.log(this.orderData.id)
+        await this.orderLoadingData(this.userInfo)
+        this.clearCartProduct()
         this.$router.push({ name: 'orderInfo', params: { id: this.orderData.id } })
       } catch (e) {
         this.error = e.request || {}
-        this.errorMessage = e.message || ''
+        this.errorMessage = e.message || e.request.deliveryTypeId || ''
       }
     }
   },
   async created () {
     await this.deliverieLoadingData()
-    this.createOrder.deliveryTypeId = this.deliverieData[0].id
+    this.userInfo.deliveryTypeId = this.deliverieData[0].id
     await this.paymentsLoadingData(this.deliveryId)
   },
   watch: {
-    'createOrder.deliveryTypeId': {
+    'userInfo.deliveryTypeId': {
       async handler () {
         await this.paymentsLoadingData(this.deliveryId)
       }

@@ -17,15 +17,16 @@ export default {
       state.paymentsData = payments
     }
   },
+  getters: {
+    // Вынес ключ пользователя в гетр для того чтоб не дублировать его :)
+    accesskey () {
+      return localStorage.getItem('userAccessKey')
+    }
+  },
   actions: {
-    async orderLoadingData ({ commit }, {
-      ...data
-    }) {
+    async orderLoadingData ({ commit, getters }, data) {
       try {
-        const order = await api.fetchApi(`api/orders?userAccessKey=${localStorage.getItem('userAccessKey')}`, 'POST', {
-          ...data
-        })
-        console.log(data)
+        const order = await api.fetchApi(`api/orders?userAccessKey=${getters.accesskey}`, 'POST', data)
         commit('updateOrderData', order)
       } catch (e) {
         console.log('Ошибка в экшане orderLoadingData')
@@ -34,16 +35,14 @@ export default {
     },
     async deliverieLoadingData ({ commit }) {
       try {
-        const deliverie = await api.fetchApi('api/deliveries')
-        commit('updateDeliverieData', deliverie)
+        const delivery = await api.fetchApi('api/deliveries')
+        commit('updateDeliverieData', delivery)
       } catch (e) {
         console.log('Ошибка в экшане deliverieLoadingData')
         throw e
       }
     },
-    async paymentsLoadingData ({ commit }, {
-      deliveryTypeId
-    }) {
+    async paymentsLoadingData ({ commit }, deliveryTypeId) {
       try {
         const payments = await api.fetchApi(`api/payments?deliveryTypeId=${deliveryTypeId}`)
         commit('updatePaymentsData', payments)
@@ -52,11 +51,9 @@ export default {
         throw e
       }
     },
-    async orderMadeData ({ commit }, {
-      id
-    }) {
+    async orderMadeData ({ commit, getters }, id) {
       try {
-        const orderMade = await api.fetchApi(`api/orders/${id}?userAccessKey=${localStorage.getItem('userAccessKey')}`)
+        const orderMade = await api.fetchApi(`api/orders/${id}?userAccessKey=${getters.accesskey}`)
         commit('updateOrderData', orderMade)
       } catch (e) {
         console.log('Ошибка в экшане orderMadeData')

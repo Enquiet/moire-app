@@ -9,16 +9,16 @@ export default {
   },
   mutations: {
     updateProductCategoies (state, categoies) {
-      state.categoiesData = categoies.items
+      state.categoiesData = Object.freeze(categoies.items)
     },
     updateMaterail (state, materials) {
-      state.materialsData = materials.items
+      state.materialsData = Object.freeze(materials.items)
     },
     updateSeasonProducts (state, seasons) {
-      state.seasonsData = seasons.items
+      state.seasonsData = Object.freeze(seasons.items)
     },
     updateColor (state, colors) {
-      state.colorsData = colors.items
+      state.colorsData = Object.freeze(colors.items)
     }
   },
   actions: {

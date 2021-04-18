@@ -14,6 +14,9 @@ export default {
     },
     updateProductToCard (state, product) {
       state.cartProductData = product
+    },
+    clearCartProduct (state) {
+      state.cartProductData = []
     }
   },
   getters: {
@@ -58,10 +61,6 @@ export default {
       basketItemId,
       quantity
     }) {
-      // commit('updateProductToCard', {
-      //  basketItemId,
-      //  quantity
-      // })
       try {
         const product = await api.fetchApi(`api/baskets/products?userAccessKey=${state.userAccessKey}`, 'PUT', {
           basketItemId,
@@ -77,7 +76,6 @@ export default {
       basketItemId
     }) {
       try {
-        commit('updateProductToCard', state)
         const deleteProduct = await api.fetchApi(`api/baskets/products?userAccessKey=${state.userAccessKey}`, 'DELETE', {
           basketItemId
         })

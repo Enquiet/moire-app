@@ -2,12 +2,12 @@
   <main class="content container">
     <div class="content__top">
       <ul class="breadcrumbs">
-        <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="index.html">Каталог</a>
-        </li>
-        <li class="breadcrumbs__item">
-          <a class="breadcrumbs__link" href="cart.html">Корзина</a>
-        </li>
+        <router-link class="breadcrumbs__link"  :to="{name: 'main'}">
+          Каталог
+        </router-link>
+        <router-link class="breadcrumbs__link" :to="{name: 'cart'}">
+            Корзина
+        </router-link>
         <li class="breadcrumbs__item">
           <a class="breadcrumbs__link">Оформление заказа</a>
         </li>
@@ -87,9 +87,7 @@ export default {
   computed: {
     ...mapState('order', ['orderData']),
     id () {
-      return {
-        id: this.$route.params.id
-      }
+      return this.$route.params.id
     },
     basket () {
       return this.orderData.basket ? this.orderData.basket.items : []
@@ -104,18 +102,16 @@ export default {
       try {
         await this.orderMadeData(this.id)
       } catch (e) {
-        console.log(e)
+        this.$router.replace({ name: '404' })
       }
     }
-  },
-  async created () {
-    await this.orderMadeData(this.id)
   },
   watch: {
     '$route.params.id': {
       async handler () {
-        await this.orderMadeData(this.id)
-      }
+        await this.getOrderInfoId()
+      },
+      immediate: true
     }
   }
 }
