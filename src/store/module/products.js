@@ -19,7 +19,7 @@ export default {
     }
   },
   getters: {
-    // добавляю свои картинки т.к. с бэка приходит одна картинка
+    // I add my pictures. because one picture comes from the server
     addFakeImages (state) {
       return state.productData.colors.map(item => {
         const gallery = [...item.gallery, ...fakeImages]

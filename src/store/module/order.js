@@ -18,7 +18,7 @@ export default {
     }
   },
   getters: {
-    // Вынес ключ пользователя в гетр для того чтоб не дублировать его :)
+    // I took the user's key into the getters so as not to duplicate it :)
     accesskey () {
       return localStorage.getItem('userAccessKey')
     }
